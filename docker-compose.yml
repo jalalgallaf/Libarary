@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  book-service:
+    build: ./book-service
+    image: book-service:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:librarydb
+    container_name: book-service

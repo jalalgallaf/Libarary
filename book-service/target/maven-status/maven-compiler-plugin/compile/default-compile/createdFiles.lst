@@ -1,0 +1,13 @@
+com/library/book/model/Category.class
+com/library/book/service/BookService.class
+com/library/book/controller/BookController.class
+com/library/book/dto/BookResponse.class
+com/library/book/BookServiceApplication.class
+com/library/book/model/Category$CategoryBuilder.class
+com/library/book/dto/BookRequest.class
+com/library/book/model/Book.class
+com/library/book/dto/BookRequest$BookRequestBuilder.class
+com/library/book/repository/CategoryRepository.class
+com/library/book/model/Book$BookBuilder.class
+com/library/book/dto/BookResponse$BookResponseBuilder.class
+com/library/book/repository/BookRepository.class
