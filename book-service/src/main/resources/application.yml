@@ -1,13 +1,3 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/librarydb
-    username: postgres
-    password: postgres
-    driverClassName: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-server:
-  port: 8081
+  application:
+    name: book-service

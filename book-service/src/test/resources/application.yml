@@ -9,3 +9,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+  cloud:
+    config:
+      enabled: false

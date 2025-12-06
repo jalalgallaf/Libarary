@@ -1,17 +1,37 @@
 services:
+
+  config-service:
+    build: ./config-service
+    image: config-service:latest
+    ports:
+      - "8888:8888"
+    container_name: config-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - private_net
+
+
   book-service:
     build: ./book-service
     image: book-service:latest
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/librarydb
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_CONFIG_IMPORT=configserver:http://config-service:8888
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
+      config-service:
+        condition: service_healthy
     container_name: book-service
+    networks:
+      - private_net
+      - public_net
 
   postgres:
     image: postgres:16-alpine
@@ -24,6 +44,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     container_name: postgres
+    networks:
+      - private_net
+      - public_net
+
 
 volumes:
   postgres_data:
+
+networks:
+  public_net:
+  private_net:
+    internal: true
