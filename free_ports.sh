@@ -24,26 +24,69 @@ echo "Found ports: $PORTS"
 for PORT in $PORTS; do
     echo "Checking port $PORT..."
     
-    # Find PID using lsof (works on macOS/Linux)
-    # -t: terse (only PIDs)
-    # -i tcp:PORT: select IPv[46] TCP files at this port
-    PIDS=$(lsof -ti tcp:$PORT)
+            # Find PID using lsof (works on macOS/Linux)
     
-    if [ -n "$PIDS" ]; then
-        echo "Port $PORT is occupied by PID(s): $PIDS"
+        # -t: terse (only PIDs)
+    
+        # -i tcp:PORT: select IPv[46] TCP files at this port
+    
+        PIDS=$(lsof -ti tcp:$PORT)
+    
         
-        # Check if it's a Docker process to be polite
-        COMMANDS=$(ps -p $PIDS -o comm=)
-        echo "Process names: $COMMANDS"
-        
-        echo "Closing port $PORT (killing PIDS: $PIDS)..."
-        kill -9 $PIDS
-        
-        if [ $? -eq 0 ]; then
-            echo "Successfully freed port $PORT."
-        else
-            echo "Failed to free port $PORT."
-        fi
+    
+        if [ -n "$PIDS" ]; then
+    
+            echo "Port $PORT is occupied by PID(s): $PIDS"
+    
+            
+    
+            # Check if it's a Docker process to be polite
+    
+            SKIP_KILL=false
+    
+            for PID in $PIDS; do
+    
+                COMMAND=$(ps -p $PID -o comm= | head -n 1) # Get command name for individual PID
+    
+                if [[ "$COMMAND" == *Docker* || "$COMMAND" == *com.docker.backend* ]]; then
+    
+                    echo "Warning: PID $PID (Command: $COMMAND) is a Docker process. Skipping kill to avoid disrupting Docker Desktop."
+    
+                    SKIP_KILL=true
+    
+                    break # Don't check other PIDs for this port if one is Docker
+    
+                fi
+    
+            done
+    
+    
+    
+            if [ "$SKIP_KILL" = false ]; then
+    
+                echo "Closing port $PORT (killing PIDS: $PIDS)..."
+    
+                kill -9 $PIDS
+    
+                
+    
+                if [ $? -eq 0 ]; then
+    
+                    echo "Successfully freed port $PORT."
+    
+                else
+    
+                    echo "Failed to free port $PORT."
+    
+                fi
+    
+            else
+    
+                echo "Did not free port $PORT as it is occupied by a Docker process."
+    
+            fi
+    
+    
     else
         echo "Port $PORT is already free."
     fi

@@ -2,37 +2,45 @@
 
 # Variables
 COMPOSE_FILE := docker-compose.yml
-SERVICE_DIR := book-service
-SCRIPT := ./free_ports.sh
 
-.PHONY: help build up down clean logs
+# Dynamic Service Detection
+# 1. Find all subdirectories containing a pom.xml
+POM_FILES := $(wildcard */pom.xml)
+# 2. Extract the directory names (e.g., "book-service/ discovery-service/")
+SERVICES := $(dir $(POM_FILES))
+
+.PHONY: help up down logs
 
 help:
-	@echo "Available targets:"
-	@echo "  make up      - Frees ports, builds the application, and starts Docker containers"
-	@echo "  make down    - Stops and removes Docker containers"
-	@echo "  make build   - Builds the Java application (Maven)"
-	@echo "  make clean   - Cleans Maven artifacts and Docker resources"
-	@echo "  make logs    - Follows container logs"
+	@echo "Detected Services: $(SERVICES)"
+	@echo "Targets:"
+	@echo "  make up    -> Compiles JARs (mvn install) and starts Docker containers"
+	@echo "  make down  -> Stops Docker and cleans Maven artifacts (mvn clean)"
+	@echo "  make logs  -> Follows container logs"
 
-build:
-	@echo "Building the application..."
-	cd $(SERVICE_DIR) && mvn clean install
-
+# ----------------------------------------------------------------
+# UP: Build JARs -> Start Docker
+# ----------------------------------------------------------------
 up:
-	@echo "Preparing to start services..."
-	@chmod +x $(SCRIPT)
-	@$(SCRIPT)
-	@$(MAKE) build
-	@echo "Starting Docker containers..."
+	@echo "Starting Build Process for: $(SERVICES)..."
+	@for service in $(SERVICES); do \
+		echo ">> Building $$service..."; \
+		(cd $$service && mvn clean install -DskipTests) || exit 1; \
+	done
+	@echo ">> Starting Docker Containers..."
 	docker-compose -f $(COMPOSE_FILE) up -d --build
 
+# ----------------------------------------------------------------
+# DOWN: Stop Docker -> Clean JARs
+# ----------------------------------------------------------------
 down:
-	docker-compose -f $(COMPOSE_FILE) down
-
-clean:
-	cd $(SERVICE_DIR) && mvn clean
-	docker-compose -f $(COMPOSE_FILE) down -v --rmi local --remove-orphans
+	@echo ">> Stopping Docker Containers..."
+	docker-compose -f $(COMPOSE_FILE) down -v --remove-orphans
+	@echo ">> Cleaning Maven Artifacts in: $(SERVICES)..."
+	@for service in $(SERVICES); do \
+		echo "Cleaning $$service..."; \
+		(cd $$service && mvn clean); \
+	done
 
 logs:
 	docker-compose -f $(COMPOSE_FILE) logs -f

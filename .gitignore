@@ -1,0 +1,44 @@
+HELP.md
+
+# --- Maven & Build ---
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# --- Docker & Environment (CRITICAL) ---
+# Prevents accidental leak of passwords/secrets
+.env
+.env.*
+docker-compose.override.yml
+*.log
+logs/
+
+# --- OS Junk Files ---
+.DS_Store
+Thumbs.db
+
+# --- IDE Settings ---
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
