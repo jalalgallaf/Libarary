@@ -62,6 +62,13 @@ public class BookService {
                 .orElseThrow(() -> new RuntimeException("Book not found"));
     }
 
+    public void deleteBook(Long id) {
+        if (!bookRepository.existsById(id)) {
+            throw new RuntimeException("Book not found with id: " + id);
+        }
+        bookRepository.deleteById(id);
+    }
+
     private BookResponse mapToResponse(Book book) {
         return BookResponse.builder()
                 .id(book.getId())

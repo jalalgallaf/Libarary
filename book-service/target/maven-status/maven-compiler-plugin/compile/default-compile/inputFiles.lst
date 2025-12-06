@@ -1,9 +1,14 @@
+/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/controller/CategoryController.java
+/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/exception/GlobalExceptionHandler.java
 /Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/dto/BookResponse.java
 /Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/repository/CategoryRepository.java
-/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/model/Book.java
-/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/controller/BookController.java
+/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/service/CategoryService.java
+/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/dto/CategoryRequest.java
 /Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/dto/BookRequest.java
 /Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/model/Category.java
 /Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/BookServiceApplication.java
 /Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/service/BookService.java
 /Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/repository/BookRepository.java
+/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/model/Book.java
+/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/controller/BookController.java
+/Users/sayedjalal/Desktop/Study/systems/Libarary/book-service/src/main/java/com/library/book/dto/CategoryResponse.java

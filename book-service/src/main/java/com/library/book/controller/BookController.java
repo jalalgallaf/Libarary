@@ -3,6 +3,7 @@ package com.library.book.controller;
 import com.library.book.dto.BookRequest;
 import com.library.book.dto.BookResponse;
 import com.library.book.service.BookService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping
-    public ResponseEntity<BookResponse> createBook(@RequestBody BookRequest request) {
+    public ResponseEntity<BookResponse> createBook(@RequestBody @Valid BookRequest request) {
         return new ResponseEntity<>(bookService.createBook(request), HttpStatus.CREATED);
     }
 
@@ -30,5 +31,11 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<BookResponse> getBookById(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.getBookById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
     }
 }

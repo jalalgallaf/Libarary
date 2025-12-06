@@ -59,4 +59,23 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.title").value("Clean Code"))
                 .andExpect(jsonPath("$.categoryName").value("Programming"));
     }
+
+    @Test
+    void createBook_WithInvalidData_ShouldReturnBadRequest() throws Exception {
+        BookRequest request = BookRequest.builder()
+                .title("") // Invalid: blank
+                .author("") // Invalid: blank
+                .isbn("") // Invalid: blank
+                .publicationYear(-100) // Invalid: negative
+                .build();
+
+        mockMvc.perform(post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Title is required"))
+                .andExpect(jsonPath("$.author").value("Author is required"))
+                .andExpect(jsonPath("$.isbn").value("ISBN is required"))
+                .andExpect(jsonPath("$.publicationYear").value("Publication year must be positive"));
+    }
 }
