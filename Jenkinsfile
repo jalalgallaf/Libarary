@@ -1,12 +1,6 @@
 pipeline {
 	agent any
 
-	tools {
-		// We keep Maven, but we removed the 'jdk' line causing the error.
-		// Make sure you have configured 'Maven-3' in Manage Jenkins -> Tools
-		maven 'Maven-3'
-	}
-
 	environment {
 		// --- CONFIGURATION ---
 		DOCKER_HUB_USER = 'jalal2008z'
