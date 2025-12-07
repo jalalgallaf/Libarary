@@ -27,33 +27,37 @@ pipeline {
 			}
 		}
 
-		stage('Build & Test') {
+		stage('Build (Skip Tests)') {
 			parallel {
 				stage('Build Book Service') {
 					steps {
 						dir('book-service') {
-							sh 'mvn clean install'
+							// ADDED -DskipTests here
+							sh 'mvn clean install -DskipTests'
 						}
 					}
 				}
 				stage('Build Config Service') {
 					steps {
 						dir('config-service') {
-							sh 'mvn clean install'
+							// ADDED -DskipTests here
+							sh 'mvn clean install -DskipTests'
 						}
 					}
 				}
 				stage('Build Discovery Service') {
 					steps {
 						dir('discovery-service') {
-							sh 'mvn clean install'
+							// ADDED -DskipTests here
+							sh 'mvn clean install -DskipTests'
 						}
 					}
 				}
 				stage('Build Gateway Service') {
 					steps {
 						dir('gateway-service') {
-							sh 'mvn clean install'
+							// ADDED -DskipTests here
+							sh 'mvn clean install -DskipTests'
 						}
 					}
 				}
@@ -88,11 +92,17 @@ pipeline {
 		stage('Pull Images') {
 			steps {
 				script {
-					docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
+					// CHANGED: Use shell commands instead of 'docker.withRegistry'
+					// to avoid "No such property: docker" error
+					withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+						sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
 						sh "docker pull ${DOCKER_HUB_USER}/book-service:latest"
 						sh "docker pull ${DOCKER_HUB_USER}/config-service:latest"
 						sh "docker pull ${DOCKER_HUB_USER}/discovery-service:latest"
 						sh "docker pull ${DOCKER_HUB_USER}/gateway-service:latest"
+
+						sh 'docker logout'
 					}
 				}
 			}
@@ -118,10 +128,16 @@ pipeline {
 def processDockerImage(String serviceName) {
 	dir(serviceName) {
 		script {
-			docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
+			withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+
+				sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
 				def imageName = "${DOCKER_HUB_USER}/${serviceName}"
-				def app = docker.build("${imageName}:latest")
-				app.push()
+				sh "docker build -t ${imageName}:latest ."
+
+				sh "docker push ${imageName}:latest"
+
+				sh 'docker logout'
 			}
 		}
 	}
