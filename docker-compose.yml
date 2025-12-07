@@ -31,9 +31,23 @@ services:
       config-service:
         condition: service_healthy
 
-
-
-
+  gateway-service:
+    build: ./gateway-service
+    image: gateway-service:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    container_name: gateway-service
+    networks:
+      - private_net
+      - public_net
 
   book-service:
     build: ./book-service
