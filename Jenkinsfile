@@ -76,17 +76,17 @@ pipeline {
 		stage('Deploy to K8s Local') {
 			steps {
 				script {
-					// This step will now work because you installed the Kubernetes CLI plugin
 					withKubeConfig([credentialsId: env.KUBECONFIG_ID]) {
-
-						// Update images in YAML
+						// Update image names
 						sh "sed -i 's|image: book-service|image: ${DOCKER_HUB_USER}/book-service|g' kuber.yaml"
 						sh "sed -i 's|image: config-service|image: ${DOCKER_HUB_USER}/config-service|g' kuber.yaml"
 						sh "sed -i 's|image: discovery-service|image: ${DOCKER_HUB_USER}/discovery-service|g' kuber.yaml"
 						sh "sed -i 's|image: gateway-service|image: ${DOCKER_HUB_USER}/gateway-service|g' kuber.yaml"
 
-						// Apply
-						sh 'kubectl apply -f kuber.yaml'
+						// FIXED COMMAND:
+						// 1. --insecure-skip-tls-verify : Ignores the certificate name mismatch (host.docker.internal)
+						// 2. --validate=false : Skips downloading the openapi schema which causes the timeout
+						sh 'kubectl apply -f kuber.yaml --insecure-skip-tls-verify --validate=false'
 					}
 				}
 			}
