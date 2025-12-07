@@ -109,7 +109,7 @@ spec:
       containers:
         - name: config-service
           image: config-service:latest
-          imagePullPolicy: Never # Uses your local docker build
+          imagePullPolicy: IfNotPresent # Uses your local docker build
           ports:
             - containerPort: 8888
           # Liveness probe replaces Docker Compose "healthcheck"
@@ -154,7 +154,7 @@ spec:
       containers:
         - name: discovery-service
           image: discovery-service:latest
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8761
           env:
@@ -202,7 +202,7 @@ spec:
       containers:
         - name: book-service
           image: book-service:latest
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
           env:
@@ -223,3 +223,46 @@ spec:
                 secretKeyRef:
                   name: postgres-secret
                   key: password
+
+---
+# ==========================================
+# 5. GATEWAY SERVICE
+# ==========================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  selector:
+    app: gateway-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: gateway-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_CONFIG_IMPORT
+              value: "configserver:http://config-service:8888"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka/"
