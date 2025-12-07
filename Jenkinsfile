@@ -3,13 +3,13 @@ pipeline {
 
     environment {
         // --- CONFIGURATION ---
-        DOCKER_REGISTRY = 'your-docker-registry'  // e.g., 'docker.io/myuser' or 'myregistry.com'
-        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
+        DOCKER_REGISTRY = 'https://hub.docker.com/repositories/jalal2008z'  // e.g., 'docker.io/myuser' or 'myregistry.com'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-login'
         
         // Git Configuration
-        GIT_REPO_URL = 'https://github.com/your-username/your-repo.git'
+        GIT_REPO_URL = 'https://github.com/jalalgallaf/Libarary.git'
         GIT_BRANCH = 'main'
-        GIT_CREDENTIALS_ID = 'github-credentials'
+        GIT_CREDENTIALS_ID = 'github-token'
 
         // Kubeconfig for local deployment
         KUBECONFIG_ID = 'k8s-kubeconfig'
