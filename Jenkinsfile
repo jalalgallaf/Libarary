@@ -1,19 +1,14 @@
 pipeline {
 	agent any
 
-	// 1. THIS FIXES "mvn: not found"
-	// Make sure the name 'Maven-3' matches exactly what is in:
-	// Manage Jenkins -> Tools -> Maven Installations
 	tools {
+		// We keep Maven, but we removed the 'jdk' line causing the error.
+		// Make sure you have configured 'Maven-3' in Manage Jenkins -> Tools
 		maven 'Maven-3'
-		jdk 'jdk-17' // Optional: Ensure you have a JDK configured with this name too, or remove this line
 	}
 
 	environment {
 		// --- CONFIGURATION ---
-
-		// 2. FIXED DOCKER CONFIGURATION
-		// The username for tagging images (e.g. jalal2008z/book-service)
 		DOCKER_HUB_USER = 'jalal2008z'
 		DOCKER_CREDENTIALS_ID = 'dockerhub-login'
 
@@ -99,7 +94,6 @@ pipeline {
 		stage('Pull Images') {
 			steps {
 				script {
-					// Empty string '' in withRegistry defaults to Docker Hub
 					docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
 						sh "docker pull ${DOCKER_HUB_USER}/book-service:latest"
 						sh "docker pull ${DOCKER_HUB_USER}/config-service:latest"
@@ -114,9 +108,6 @@ pipeline {
 			steps {
 				script {
 					withKubeConfig([credentialsId: env.KUBECONFIG_ID]) {
-						// Update kuber.yaml to point to the real Docker Hub images
-						// Note: using | as delimiter in sed to avoid conflicts with / in the image name
-
 						sh "sed -i 's|image: book-service|image: ${DOCKER_HUB_USER}/book-service|g' kuber.yaml"
 						sh "sed -i 's|image: config-service|image: ${DOCKER_HUB_USER}/config-service|g' kuber.yaml"
 						sh "sed -i 's|image: discovery-service|image: ${DOCKER_HUB_USER}/discovery-service|g' kuber.yaml"
@@ -130,19 +121,12 @@ pipeline {
 	}
 }
 
-// Helper function
 def processDockerImage(String serviceName) {
 	dir(serviceName) {
 		script {
-			// Using '' as the URL for standard Docker Hub
 			docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
-				// Image Name format: username/repo:tag
 				def imageName = "${DOCKER_HUB_USER}/${serviceName}"
-
-				// Build
 				def app = docker.build("${imageName}:latest")
-
-				// Push
 				app.push()
 			}
 		}
