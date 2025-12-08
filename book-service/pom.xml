@@ -16,6 +16,8 @@
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <docker.hub.user>${env.DOCKER_USER}</docker.hub.user>
+        <docker.hub.pass>${env.DOCKER_PASS}</docker.hub.pass>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -98,5 +100,42 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>push-to-docker</id>
+            <activation>
+                <property>
+                    <name>env.DOCKER_USER</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <version>3.4.0</version>
+                        <configuration>
+                            <to>
+                                <image>docker.io/${docker.hub.user}/${project.artifactId}:latest</image>
+                                <auth>
+                                    <username>${docker.hub.user}</username>
+                                    <password>${docker.hub.pass}</password>
+                                </auth>
+                            </to>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

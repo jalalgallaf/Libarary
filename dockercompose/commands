@@ -1,0 +1,2 @@
+echo 'export DOCKER_USER=jalal2008z' >> ~/.zshrc
+echo 'export DOCKER_PASS=dckr_pat_k93h' >> ~/.zshrc

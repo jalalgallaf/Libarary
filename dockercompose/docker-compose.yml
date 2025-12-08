@@ -1,7 +1,7 @@
 services:
 
   config-service:
-    build: ./config-service
+    build: ../config-service
     image: config-service:latest
     ports:
       - "8888:8888"
@@ -16,7 +16,7 @@ services:
       - private_net
 
   discovery-service:
-    build: ./discovery-service
+    build: ../discovery-service
     image: discovery-service:latest
     ports:
       - "8761:8761"
@@ -32,7 +32,7 @@ services:
         condition: service_healthy
 
   gateway-service:
-    build: ./gateway-service
+    build: ../gateway-service
     image: gateway-service:latest
     ports:
       - "8080:8080"
@@ -50,7 +50,7 @@ services:
       - public_net
 
   book-service:
-    build: ./book-service
+    build: ../book-service
     image: book-service:latest
     ports:
       - "8081:8081"
